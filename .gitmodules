@@ -1,0 +1,3 @@
+[submodule "deps/wsjtx"]
+	path = deps/wsjtx
+	url = https://git.code.sf.net/p/wsjt/wsjtx
