@@ -1,0 +1,7 @@
+*.o
+*.mod
+*.pro.user
+*.txt
+*.bak
+build
+_build
