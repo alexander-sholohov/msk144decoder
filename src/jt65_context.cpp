@@ -23,7 +23,13 @@ std::string JT65Context::asString() const
     info << Context::asString();
     info << "JT65 submode: " << this->jt65_submode << "(" << static_cast<char>('A' + this->jt65_submode) << ")" << std::endl;
     info << "JT65 depth: " << this->jt65_depth << std::endl;
-    info << "JT65 T/R intreval: " << this->tr_interval_in_seconds << " seconds" << std::endl;
+    if (this->immediate_read) {
+        info << "Immediate read mode activated." << std::endl;
+    }
+    else 
+    {
+        info << "JT65 T/R interval: " << this->tr_interval_in_seconds << " seconds" << std::endl;
+    }
 
     return info.str();
 }

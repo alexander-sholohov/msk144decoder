@@ -204,7 +204,8 @@ int main(int argc, char** argv)
         }
 
         // Run file and http reporter tasks in separate thread.
-        DecodeResult decode_result(line);
+        DecodeResult decode_result;
+        decode_result.initFromMSK144Result(line);
         if(decode_result.isValid())
         {
             success_seq_no++;

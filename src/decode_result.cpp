@@ -12,7 +12,7 @@
 #include <sstream>
 
 //--------------------------------------------------------------------
-DecodeResult::DecodeResult(std::string const& s)
+void DecodeResult::initFromMSK144Result(std::string const& s)
 {
     // example: "145618   0  0.6 1500 &  HELLO       "
     // from mskrtd.f90:
@@ -54,12 +54,13 @@ DecodeResult::DecodeResult(std::string const& s)
 
 }
 
-void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency, std::string const& message)
+void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency, std::string const& message, std::string const& original_line)
 {
     this->db_ratio = db_ratio;
     this->dt_shift = dt_shift;
     this->frequency = frequency;
     this->message = message;
+    this->original_line = original_line;
 
     this->_result_valid = true;
 }

@@ -32,6 +32,7 @@
 #include <iostream>
 #include <thread>
 #include <sstream>
+#include <algorithm>
 
 #define MY_FALSE (0)
 #define MY_TRUE (1)
@@ -42,20 +43,15 @@ enum class WORKING_MODE
     COLLECTING,
 };
 
-struct FortranContext
+// GFortran interop trick.
+struct GFortranContext
 {
-    //FortranContext()
-    //{
-    //    data0 = &fortran_working_area[0];
-    //};
-
     void* data0 = &fortran_working_area[0];
     void* data1 = 0;
     DecodeResult decode_result;
 
     size_t fortran_working_area[16];
 };
-
 
 
 extern "C" {
@@ -92,7 +88,7 @@ extern "C" {
 
 }
 
-extern "C" void jt65_decode_callback(FortranContext * me,
+extern "C" void jt65_decode_callback(GFortranContext *  me,
     float* sync,
     int* snr,
     float* dt,
@@ -107,11 +103,8 @@ extern "C" void jt65_decode_callback(FortranContext * me,
     int* nsum,
     int* minsync)
 {
-
-    me->decode_result.initFromParams(*snr, *dt, *freq, rtrim_copy(decoded));
-
-    std::cout << "*** "
-        << " sync=" << *sync
+    std::ostringstream info;
+    info << "sync=" << *sync
         << " snr=" << *snr
         << " dt=" << *dt
         << " freq=" << *freq
@@ -123,20 +116,28 @@ extern "C" void jt65_decode_callback(FortranContext * me,
         << " qual=" << *qual
         << " nsmo=" << *nsmo
         << " nsum=" << *nsum
-        << " minsync=" << *minsync
-        << std::endl;
+        << " minsync=" << *minsync;
+
+    me->decode_result.initFromParams(*snr, *dt, *freq, rtrim_copy(decoded), info.str());
+
+    std::cout << "*** " << info.str() << std::endl;
 }
 
 //-----------------------------------------------------------------------------------
-static void call_jt65_decoder(std::vector<short> stream, int npts, JT65Context const& ctx, int time_as_int)
+static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Context const& ctx, int time_as_int)
 {
+    const int JT65_EXPECTING_NUM_SAMPLES = 60 * 12000;
+    std::vector<float> buffer(JT65_EXPECTING_NUM_SAMPLES);
+
+    // calc result len
+    int len = std::min(static_cast<int>(stream.size()), num_samples);
     // convert samples to float buffer
-    std::vector<float> buffer;
-    for (size_t idx = 0; idx < npts && idx < stream.size(); idx++) 
+    for (size_t idx = 0; idx < len && idx < buffer.size(); idx++)
     { 
         buffer[idx] = static_cast<float>( stream[idx] ); 
     }
 
+    int npts = len;
     int newdat = MY_FALSE; // bool
     int nutc = time_as_int;
     int nf1 = 200;
@@ -160,20 +161,13 @@ static void call_jt65_decoder(std::vector<short> stream, int npts, JT65Context c
     int nQSOProgress = 0;
     int ljt65apon = MY_FALSE; // bool
 
-
     memset(mycall, 0, sizeof(mycall));
     memset(hiscall, 0, sizeof(hiscall));
     memset(hisgrid, 0, sizeof(hisgrid));
 
-    //void* me[2];
-    //memset(me, 0, sizeof(me));
-    //size_t dummy = 0;
-    //me[0] = &dummy;
-
-    FortranContext fortranContext;
+    GFortranContext fortranContext;
 
     void* callback = (void*)&jt65_decode_callback;
-
 
     __jt65_decode_MOD_decode(
         &fortranContext,
@@ -206,8 +200,9 @@ static void call_jt65_decoder(std::vector<short> stream, int npts, JT65Context c
 
     if (fortranContext.decode_result.isValid())
     {
+        std::cout << "result valid" << std::endl;
         // call as normal function, not a thread
-        wrk_thread(ctx, stream, fortranContext.decode_result, 0);
+        wrk_thread(ctx, std::move(stream), fortranContext.decode_result, 0);
     }
 }
 
@@ -222,6 +217,7 @@ static void usage(void)
     buf << "\t[--file_log_workdir= Directory name where put file logs into. (default: \".\")]\n";
     buf << "\t[--jt65-submode= Submode 0,1,2 means A,B,C (default: 0)]\n";
     buf << "\t[--depth= Deep of analysis. (default: 3)]\n";
+    buf << "\t[--immediate-read  Read stream 50*12000 samples max, run decoder and exit\n";
     buf << "\t[--help this text]\n";
 
     std::cout << buf.str() << std::endl;
@@ -256,6 +252,7 @@ int main(int argc, char** argv)
             {"file_log_workdir", required_argument, 0, 0}, // 6
             {"jt65-submode", required_argument, 0, 0}, // 7
             {"depth", required_argument, 0, 0}, // 8
+            {"immediate-read", no_argument, 0, 0}, // 8
             {0, 0, 0, 0}
     };
 
@@ -299,6 +296,9 @@ int main(int argc, char** argv)
             case 8:
                 ctx.jt65_depth = atoi(optarg);
                 break;
+            case 9:
+                ctx.immediate_read = true;
+                break;
             default:
                 usage();
             }
@@ -319,25 +319,68 @@ int main(int argc, char** argv)
 
     size_t collecting_pos = 0;
 
-
     std::cout << "JT65 decoder started." << std::endl;
- 
+
+    // ----- Short Stream Mode --------
+    if (ctx.immediate_read)
+    {
+        while (true)
+        {
+            if (feof(stdin)) 
+            {
+                std::cerr << "Got EOF" << std::endl;
+                break;
+            }
+
+            if (collecting_pos + COLLECTING_READ_SIZE > collecting_buffer.size())
+            {
+                std::cout << "Read done" << std::endl;
+                break;
+            }
+            else
+            {
+                // consume samples to buffer
+                int rc = fread(&collecting_buffer[collecting_pos], sizeof(short), COLLECTING_READ_SIZE, stdin);
+                if (rc != IDLE_READ_SIZE) { std::cout << "Incomplete read. rc=" << rc << std::endl; break; }
+                collecting_pos += COLLECTING_READ_SIZE;
+            }
+        }
+
+        if (collecting_pos)
+        {
+            std::cout << "Start decoding ..." << std::endl;
+            int utc = utc_as_wsjt_int(); //
+            std::thread t(call_jt65_decoder, collecting_buffer, collecting_pos, ctx, utc);
+            t.join();
+        }
+
+        std::cout << "JT65 decoder immediate read normal exit." << std::endl;
+        return 0;
+    }
+
+
     WORKING_MODE working_mode = WORKING_MODE::IDLE;
     int prev_seconds_to_launch = ctx.tr_interval_in_seconds;
     int limit_num_samples_extra = 0; // 0 - means no extra limit
 
+    // --- Normal Stream Mode ---
     while(true)
     {
-        if (feof(stdin)) {
+        if (feof(stdin)) 
+        {
             std::cerr << "Got EOF" << std::endl;
             break;
         }
 
-        if (working_mode == WORKING_MODE::IDLE) {
+        if (working_mode == WORKING_MODE::IDLE) 
+        {
+            // wait moment to start
+
             int s = seconds_to_next_launch(ctx.tr_interval_in_seconds);
 
             bool need_launch = false;
 
+            // basic condition to start
             if (s == 0) 
             {
                 need_launch = true;
@@ -347,9 +390,12 @@ int main(int argc, char** argv)
             // in case we missed launch moment somehow
             if (!need_launch && s > prev_seconds_to_launch) 
             {
-                need_launch = true;
-                int s = seconds_since_launch(ctx.tr_interval_in_seconds);
-                limit_num_samples_extra = (max_record_duration_in_seconds - s) * sample_rate;
+                int passed = seconds_since_launch(ctx.tr_interval_in_seconds);
+                limit_num_samples_extra = (max_record_duration_in_seconds - passed) * sample_rate;
+                if (limit_num_samples_extra > 0)
+                {
+                    need_launch = true;
+                }
             }
 
             prev_seconds_to_launch = s;
@@ -377,7 +423,7 @@ int main(int argc, char** argv)
             {
                 // consume samples to buffer
                 int rc = fread(&collecting_buffer[collecting_pos], sizeof(short), COLLECTING_READ_SIZE, stdin);
-                if (rc != IDLE_READ_SIZE) { std::cerr << "Incomplete read error. rc=" << rc; break; }
+                if (rc != IDLE_READ_SIZE) { std::cerr << "Incomplete read error. rc=" <<  rc << std::endl; break; }
                 collecting_pos += COLLECTING_READ_SIZE;
             }
         }
@@ -385,7 +431,7 @@ int main(int argc, char** argv)
         {
             // reading idle samples for nothing
             int rc = fread(&idle_buffer[0], sizeof(short), IDLE_READ_SIZE, stdin);
-            if (rc != IDLE_READ_SIZE) { std::cerr << "Incomplete read error. rc=" << rc; break; }
+            if (rc != IDLE_READ_SIZE) { std::cerr << "Incomplete read error. rc=" << rc << std::endl; break; }
         }
 
         sched_yield(); // Force give time to OS. Probably not very necessary.
