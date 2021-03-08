@@ -40,8 +40,5 @@ std::string Context::asString() const
         info << "disabled." << std::endl;
     }
 
-    info << "Center frequncy: " << this->mskrtd_nrxfreq << " Hz" << std::endl;
-    info << "Depth: " << this->mskrtd_ndepth << std::endl;
-
     return info.str();
 }

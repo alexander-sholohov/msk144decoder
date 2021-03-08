@@ -54,6 +54,17 @@ DecodeResult::DecodeResult(std::string const& s)
 
 }
 
+void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency, std::string const& message)
+{
+    this->db_ratio = db_ratio;
+    this->dt_shift = dt_shift;
+    this->frequency = frequency;
+    this->message = message;
+
+    this->_result_valid = true;
+}
+
+
 //--------------------------------------------------------------------
 std::string DecodeResult::asString() const
 {

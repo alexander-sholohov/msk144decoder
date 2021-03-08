@@ -5,7 +5,7 @@
 //
 
 #include "wavfile.h"
-#include "context.h"
+#include "msk144_context.h"
 
 #include "wrk_thread.h"
 #include "utils.h"
@@ -45,7 +45,7 @@ extern "C" {
 }
 
 //-----------------------------------------------------------------------------------
-static std::string call_mskrtd(const short int* buffer, Context const& ctx, int time_as_int, float shift_in_seconds)
+static std::string call_mskrtd(const short int* buffer, MSK144Context const& ctx, int time_as_int, float shift_in_seconds)
 {
     int nutc0 = time_as_int; // 10000*4 + 100*3 + (cnt * HALF_UNIT_SIZE / 12000);
     float tsec = shift_in_seconds; // cnt * HALF_UNIT_SIZE / 12000.0;
@@ -110,7 +110,7 @@ static bool str2bool(const char* str)
 //------------------------------------------------------------
 int main(int argc, char** argv)
 {
-    Context ctx;
+    MSK144Context ctx;
 
     static struct option long_options[] = {
             {"help", no_argument, 0, 0}, // 0

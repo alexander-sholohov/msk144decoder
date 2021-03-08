@@ -30,6 +30,26 @@ int utc_as_wsjt_int()
 }
 
 //---------------------------------------------------------------------------------------------
+int seconds_since_launch(int tr_interval)
+{
+    int s = utc_as_wsjt_int();
+    int m = s % tr_interval;
+    return m;
+}
+
+//---------------------------------------------------------------------------------------------
+int seconds_to_next_launch(int tr_interval)
+{
+    int m = seconds_since_launch(tr_interval);
+
+    if (m == 0) {
+        return 0;
+    }
+
+    return tr_interval - m;
+}
+
+//---------------------------------------------------------------------------------------------
 void create_dir_if_not_exists(std::string const& dirname)
 {
     static std::mutex gmtx;

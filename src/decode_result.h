@@ -9,7 +9,9 @@
 
 struct DecodeResult
 {
-    explicit DecodeResult(std::string const& s);
+    DecodeResult() = default;
+    explicit DecodeResult(std::string const& s); // init from msk144 string
+    void initFromParams(int db_ratio, float dt_shift, float frequency, std::string const& message);
     std::string asString() const;
     bool isValid() const { return _result_valid; }
 
