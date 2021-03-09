@@ -30,9 +30,16 @@ int utc_as_wsjt_int()
 }
 
 //---------------------------------------------------------------------------------------------
+int seconds_since_midnight()
+{
+    std::tm utc = utcnow();
+    return 60 * 60 * utc.tm_hour + 60 * utc.tm_min + utc.tm_sec;
+}
+
+//---------------------------------------------------------------------------------------------
 int seconds_since_launch(int tr_interval)
 {
-    int s = utc_as_wsjt_int();
+    int s = seconds_since_midnight();
     int m = s % tr_interval;
     return m;
 }
