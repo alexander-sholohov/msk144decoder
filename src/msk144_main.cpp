@@ -7,7 +7,7 @@
 #include "wavfile.h"
 #include "msk144_context.h"
 
-#include "wrk_thread.h"
+#include "report_tasks.h"
 #include "utils.h"
 #include "http_reporter.h"
 #include "decode_result.h"
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
         if(decode_result.isValid())
         {
             success_seq_no++;
-            std::thread t(wrk_thread, ctx, buffer, decode_result, success_seq_no);
+            std::thread t(report_tasks, ctx, buffer, decode_result, success_seq_no);
             t.detach();
         }
 

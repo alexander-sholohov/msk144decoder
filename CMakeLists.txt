@@ -154,7 +154,7 @@ set (wsjt_jt65_FSRCS
 
 set (project_common_SRCS 
   src/wavfile.cpp src/wavfile.h
-  src/wrk_thread.cpp src/wrk_thread.h
+  src/report_tasks.cpp src/report_tasks.h
   src/utils.cpp src/utils.h
   src/http_reporter.cpp src/http_reporter.h
   src/decode_result.cpp src/decode_result.h

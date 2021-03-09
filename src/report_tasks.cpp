@@ -4,7 +4,7 @@
 // License: MIT
 //
 
-#include "wrk_thread.h"
+#include "report_tasks.h"
 #include "context.h"
 #include "wavfile.h"
 #include "utils.h"
@@ -51,7 +51,7 @@ static void file_process(const Context& ctx, std::vector<short> const& stream, D
 }
 
 //---------------------------------------------------------------------------------------------
-void wrk_thread(const Context& ctx, std::vector<short> stream, DecodeResult decode_result, size_t seq_no)
+void report_tasks(const Context& ctx, std::vector<short> stream, DecodeResult decode_result, size_t seq_no)
 {
     try
     {

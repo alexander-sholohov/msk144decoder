@@ -11,4 +11,4 @@
 
 struct Context;
 
-void wrk_thread(const Context& ctx, std::vector<short> stream, DecodeResult decode_result, size_t seq_no);
+void report_tasks(const Context& ctx, std::vector<short> stream, DecodeResult decode_result, size_t seq_no);

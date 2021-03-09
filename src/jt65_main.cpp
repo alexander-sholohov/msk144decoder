@@ -7,7 +7,7 @@
 #include "wavfile.h"
 #include "jt65_context.h"
 
-#include "wrk_thread.h"
+#include "report_tasks.h"
 #include "utils.h"
 #include "http_reporter.h"
 #include "decode_result.h"
@@ -203,7 +203,7 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
     {
         std::cout << "result valid" << std::endl;
         // call as normal function, not a thread
-        wrk_thread(ctx, std::move(stream), fortranContext.decode_result, 0);
+        report_tasks(ctx, std::move(stream), fortranContext.decode_result, 0);
     }
 }
 
