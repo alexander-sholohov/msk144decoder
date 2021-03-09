@@ -54,6 +54,7 @@ void DecodeResult::initFromMSK144Result(std::string const& s)
 
 }
 
+//--------------------------------------------------------------------
 void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency, std::string const& message, std::string const& original_line)
 {
     this->db_ratio = db_ratio;
@@ -65,6 +66,11 @@ void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency,
     this->_result_valid = true;
 }
 
+//--------------------------------------------------------------------
+void DecodeResult::updateUTCTime(int utc_time)
+{
+    this->utc_time = utc_time;
+}
 
 //--------------------------------------------------------------------
 std::string DecodeResult::asString() const

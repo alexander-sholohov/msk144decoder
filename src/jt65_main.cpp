@@ -166,7 +166,7 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
     memset(hisgrid, 0, sizeof(hisgrid));
 
     GFortranContext fortranContext;
-    fortranContext.decode_result.utc_time = utc_hhmm;
+    fortranContext.decode_result.updateUTCTime(utc_hhmm);
 
     void* callback = (void*)&jt65_decode_callback;
 
@@ -212,13 +212,14 @@ static void usage(void)
 {
     std::ostringstream buf;
     buf << "\njt65decoder - jt65 digital mode stream decoder. Accepts audio stream - 16 bits signed, 12000 samples per second, mono.\n\n";
-    buf << "Usage:\t[--spot_reporter_url= Address of sport reporter service. (default: http://192.168.1.200:9000/spotter/default/populate_spot ]\n";
-    buf << "\t[--spot_reporter_enable= Enable or not http report. true or 1 to enable (default: false)]\n";
-    buf << "\t[--file_log_enable= Enable or not file logging. true or 1 to enable (default: false)]\n";
-    buf << "\t[--file_log_workdir= Directory name where put file logs into. (default: \".\")]\n";
+    buf << "Usage:\t[--spot-reporter-url= Address of spot reporter service. (default: http://192.168.1.200:9000/spotter/default/populate_spot ]\n";
+    buf << "\t[--spot-reporter-enable= Enable or not http report. true or 1 to enable (default: false)]\n";
+    buf << "\t[--file-log-enable= Enable or not file logging. true or 1 to enable (default: false)]\n";
+    buf << "\t[--file-log-workdir= Directory name where put file logs into. (default: \".\")]\n";
     buf << "\t[--jt65-submode= Submode 0,1,2 means A,B,C (default: 0)]\n";
+    buf << "\t[--tr-interval= T/R interval in seconds (default: 60)]\n";
     buf << "\t[--depth= Deep of analysis. (default: 3)]\n";
-    buf << "\t[--immediate-read  Read stream 50*12000 samples max, run decoder and exit\n";
+    buf << "\t[--immediate-read  Read stream until buffer full, run decoder and exit.]\n";
     buf << "\t[--help this text]\n";
 
     std::cout << buf.str() << std::endl;
@@ -245,15 +246,16 @@ int main(int argc, char** argv)
 
     static struct option long_options[] = {
             {"help", no_argument, 0, 0}, // 0
-            {"sport_reporter_src", required_argument, 0, 0}, // 1
-            {"spot_reporter_url", required_argument, 0, 0}, // 2
-            {"spot_reporter_magic_key", required_argument, 0, 0}, // 3
-            {"spot_reporter_enable", required_argument, 0, 0}, // 4
-            {"file_log_enable", required_argument, 0, 0}, // 5
+            {"sport-reporter-src", required_argument, 0, 0}, // 1
+            {"spot-reporter-url", required_argument, 0, 0}, // 2
+            {"spot-reporter-magic-key", required_argument, 0, 0}, // 3
+            {"spot-reporter-enable", required_argument, 0, 0}, // 4
+            {"file-log-enable", required_argument, 0, 0}, // 5
             {"file_log_workdir", required_argument, 0, 0}, // 6
             {"jt65-submode", required_argument, 0, 0}, // 7
-            {"depth", required_argument, 0, 0}, // 8
-            {"immediate-read", no_argument, 0, 0}, // 8
+            {"tr-interval", required_argument, 0, 0}, // 8
+            {"depth", required_argument, 0, 0}, // 9
+            {"immediate-read", no_argument, 0, 0}, // 10
             {0, 0, 0, 0}
     };
 
@@ -295,9 +297,12 @@ int main(int argc, char** argv)
                 ctx.jt65_submode = atoi(optarg);
                 break;
             case 8:
-                ctx.jt65_depth = atoi(optarg);
+                ctx.tr_interval_in_seconds = atoi(optarg);
                 break;
             case 9:
+                ctx.jt65_depth = atoi(optarg);
+                break;
+            case 10:
                 ctx.immediate_read = true;
                 break;
             default:
