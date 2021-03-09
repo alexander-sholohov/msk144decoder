@@ -82,10 +82,10 @@ static void usage(void)
 {
     std::ostringstream buf;
     buf << "\nmsk144decoder - msk144 mode stream decoder. Accepts audio stream - 16 bits signed, 12000 samples per second, mono.\n\n";
-    buf << "Usage:\t[--spot_reporter_url= Address of sport reporter service. (default: http://192.168.1.200:9000/spotter/default/populate_spot ]\n";
-    buf << "\t[--spot_reporter_enable= Enable or not http report. true or 1 to enable (default: false)]\n";
-    buf << "\t[--file_log_enable= Enable or not file logging. true or 1 to enable (default: false)]\n";
-    buf << "\t[--file_log_workdir= Directory name where put file logs into. (default: \".\")]\n";
+    buf << "Usage:\t[--spot-reporter-url= Address of spot reporter service. (default: http://192.168.1.200:9000/spotter/default/populate_spot ]\n";
+    buf << "\t[--spot-reporter-enable= Enable or not http report. true or 1 to enable (default: false)]\n";
+    buf << "\t[--file-log-enable= Enable or not file logging. true or 1 to enable (default: false)]\n";
+    buf << "\t[--file-log-workdir= Directory name where put file logs into. (default: \".\")]\n";
     buf << "\t[--rxfreq= Center of rx frequency (default: 1500)]\n";
     buf << "\t[--depth= How deep frames average. (default: 3)]\n";
     buf << "\t[--help this text]\n";
@@ -114,12 +114,12 @@ int main(int argc, char** argv)
 
     static struct option long_options[] = {
             {"help", no_argument, 0, 0}, // 0
-            {"sport_reporter_src", required_argument, 0, 0}, // 1
-            {"spot_reporter_url", required_argument, 0, 0}, // 2
-            {"spot_reporter_magic_key", required_argument, 0, 0}, // 3
-            {"spot_reporter_enable", required_argument, 0, 0}, // 4
-            {"file_log_enable", required_argument, 0, 0}, // 5
-            {"file_log_workdir", required_argument, 0, 0}, // 6
+            {"sport-reporter-src", required_argument, 0, 0}, // 1
+            {"spot-reporter-url", required_argument, 0, 0}, // 2
+            {"spot-reporter-magic-key", required_argument, 0, 0}, // 3
+            {"spot-reporter-enable", required_argument, 0, 0}, // 4
+            {"file-log-enable", required_argument, 0, 0}, // 5
+            {"file-log-workdir", required_argument, 0, 0}, // 6
             {"rxfreq", required_argument, 0, 0}, // 7
             {"depth", required_argument, 0, 0}, // 8
             {0, 0, 0, 0}
