@@ -69,6 +69,7 @@ set_source_files_properties (
 
 set (wsjt_common_FSRCS
   ${WSJT_BASE_DIR}/lib/packjt.f90
+  ${WSJT_BASE_DIR}/lib/fftw3mod.f90
   ${WSJT_BASE_DIR}/lib/four2a.f90
   ${WSJT_BASE_DIR}/lib/timer_module.f90
   ${WSJT_BASE_DIR}/lib/deg2grid.f90
@@ -79,7 +80,6 @@ set (wsjt_common_FSRCS
 
 set (wsjt_msk144_FSRCS
   ${WSJT_BASE_DIR}/lib/crc.f90
-  ${WSJT_BASE_DIR}/lib/fftw3mod.f90
   ${WSJT_BASE_DIR}/lib/hashing.f90
   ${WSJT_BASE_DIR}/lib/77bit/packjt77.f90
   ${WSJT_BASE_DIR}/lib/analytic.f90
