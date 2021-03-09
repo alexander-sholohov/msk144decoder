@@ -195,7 +195,7 @@ int main(int argc, char** argv)
         int rc = fread(&buffer[HALF_UNIT_SIZE], sizeof(short), HALF_UNIT_SIZE, stdin);
         if(rc != HALF_UNIT_SIZE) { std::cerr << "Incomplete read error. rc=" << rc; break; }
 
-        int nutc0 = utc_as_wsjt_int(); // 10000*hh + 100*mm + ss;
+        int nutc0 = utc_as_wsjt_int_hhmmss(); // 10000*hh + 100*mm + ss;
         std::string line = call_mskrtd(&buffer[0], ctx, nutc0, 0.0);
 
         // Print RAW string from decoder to console with *** prefix at begin of line.

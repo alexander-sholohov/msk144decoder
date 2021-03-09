@@ -8,7 +8,9 @@
 #include <string>
 #include <ctime>
 
-int utc_as_wsjt_int();
+int utc_as_wsjt_int_hhmmss();
+
+int utc_as_wsjt_int_hhmm();
 
 int seconds_since_midnight();
 

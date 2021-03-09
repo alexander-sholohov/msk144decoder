@@ -349,7 +349,7 @@ int main(int argc, char** argv)
         if (collecting_pos)
         {
             std::cout << "Start decoding ..." << std::endl;
-            int utc = utc_as_wsjt_int(); //
+            int utc = utc_as_wsjt_int_hhmm(); //
             std::thread t(call_jt65_decoder, collecting_buffer, collecting_pos, ctx, utc);
             t.join();
         }
@@ -415,7 +415,7 @@ int main(int argc, char** argv)
                 working_mode = WORKING_MODE::IDLE;
                 prev_seconds_to_launch = ctx.tr_interval_in_seconds;
 
-                int utc = utc_as_wsjt_int(); // 10000*hh + 100*mm + ss;
+                int utc = utc_as_wsjt_int_hhmm(); // 100*hh + mm;
                 std::thread t(call_jt65_decoder, collecting_buffer, collecting_pos, ctx, utc);
                 t.detach();
             }
