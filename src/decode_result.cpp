@@ -38,7 +38,7 @@ void DecodeResult::initFromMSK144Result(std::string const& s)
 
     try 
     {
-        this->utc_hhmm = s.substr(0, 6);
+        this->utc_time = s.substr(0, 6);
 
         this->db_ratio = std::stoi(s.substr(6, 4));
         this->dt_shift = std::stof(s.substr(10, 15));
@@ -72,7 +72,7 @@ std::string DecodeResult::asString() const
     std::ostringstream buf;
 
     if (_result_valid) {
-        buf << "DecodeResult: utc_hhmm=" << utc_hhmm
+        buf << "DecodeResult: utc_time=" << utc_time
             << " db_ratio=" << db_ratio
             << " dt_shift=" << dt_shift
             << " frequency=" << frequency

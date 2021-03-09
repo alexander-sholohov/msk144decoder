@@ -124,7 +124,7 @@ extern "C" void jt65_decode_callback(GFortranContext *  me,
 }
 
 //-----------------------------------------------------------------------------------
-static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Context const& ctx, int time_as_int)
+static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Context const& ctx, int utc_hhmm)
 {
     const int JT65_EXPECTING_NUM_SAMPLES = 60 * 12000;
     std::vector<float> buffer(JT65_EXPECTING_NUM_SAMPLES);
@@ -139,7 +139,7 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
 
     int npts = len;
     int newdat = MY_FALSE; // bool
-    int nutc = time_as_int;
+    int nutc = utc_hhmm;
     int nf1 = 200;
     int nf2 = 4000;
     int nfqso = 0; // valid for special conditions
@@ -166,6 +166,7 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
     memset(hisgrid, 0, sizeof(hisgrid));
 
     GFortranContext fortranContext;
+    fortranContext.decode_result.utc_time = utc_hhmm;
 
     void* callback = (void*)&jt65_decode_callback;
 

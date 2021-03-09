@@ -38,7 +38,7 @@ void http_reporter(Context const& ctx, DecodeResult const& dr)
 
     std::ostringstream post;
     post << "mode=" << ctx.spot_reporter_wsjt_mode;
-    post << "&utc_time=" << dr.utc_hhmm;
+    post << "&utc_time=" << dr.utc_time;
     post << "&db_ratio=" << dr.db_ratio;
     post << "&dt_shift=" << dr.dt_shift;
     post << "&freq=" << dr.frequency;
