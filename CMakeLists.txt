@@ -57,6 +57,17 @@ set (wsjt_jt65_CSRCS
   ${WSJT_BASE_DIR}/lib/wrapkarn.c
   )
 
+set (wsjt_q65_CSRCS
+  ${WSJT_BASE_DIR}/lib/qra/qracodes/qra12_63_64_irr_b.c
+  ${WSJT_BASE_DIR}/lib/qra/qracodes/qra13_64_64_irr_e.c
+  ${WSJT_BASE_DIR}/lib/qra/q65/npfwht.c
+  ${WSJT_BASE_DIR}/lib/qra/q65/pdmath.c
+  ${WSJT_BASE_DIR}/lib/qra/q65/qracodes.c
+  ${WSJT_BASE_DIR}/lib/qra/q65/normrnd.c
+  ${WSJT_BASE_DIR}/lib/qra/q65/qra15_65_64_irr_e23.c
+  ${WSJT_BASE_DIR}/lib/qra/q65/q65.c
+  ${WSJT_BASE_DIR}/lib/qra/q65/q65_subs.c
+  )
 
 set (wsjt_CXXSRCS
   ${WSJT_BASE_DIR}/lib/crc13.cpp
@@ -151,6 +162,28 @@ set (wsjt_jt65_FSRCS
   ${WSJT_BASE_DIR}/lib/jt65_decode.f90
   )
 
+set (wsjt_q65_FSRCS
+  ${WSJT_BASE_DIR}/lib/prog_args.f90
+  ${WSJT_BASE_DIR}/lib/spec64.f90
+  ${WSJT_BASE_DIR}/lib/twkfreq.f90 
+  ${WSJT_BASE_DIR}/lib/ft8/ft8apset.f90
+  ${WSJT_BASE_DIR}/lib/smo121.f90
+  ${WSJT_BASE_DIR}/lib/chkcall.f90
+  ${WSJT_BASE_DIR}/lib/indexx.f90
+  ${WSJT_BASE_DIR}/lib/77bit/packjt77.f90
+  ${WSJT_BASE_DIR}/lib/sec0.f90
+  ${WSJT_BASE_DIR}/lib/shell.f90
+  ${WSJT_BASE_DIR}/lib/db.f90
+  ${WSJT_BASE_DIR}/lib/peakup.f90
+  ${WSJT_BASE_DIR}/lib/pctile.f90
+  ${WSJT_BASE_DIR}/lib/ana64.f90
+  ${WSJT_BASE_DIR}/lib/qra/q65/q65_loops.f90
+  ${WSJT_BASE_DIR}/lib/qra/q65/genq65.f90
+  ${WSJT_BASE_DIR}/lib/qra/q65/q65_set_list.f90
+  ${WSJT_BASE_DIR}/lib/qra/q65/q65.f90
+  ${WSJT_BASE_DIR}/lib/qra/q65/q65_ap.f90
+  ${WSJT_BASE_DIR}/lib/q65_decode.f90 
+  )
 
 set (project_common_SRCS 
   src/wavfile.cpp src/wavfile.h
@@ -182,6 +215,16 @@ add_executable (jt65decoder
   )
 target_link_libraries (jt65decoder  ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
 
-source_group("wsjt_fortran" FILES ${wsjt_FSRCS})
-source_group("wsjt_c" FILES ${wsjt_CXXSRCS} ${wsjt_CSRCS})
-source_group("src" FILES ${project_SRCS})
+add_executable (q65decoder 
+  src/q65_main.cpp 
+  src/q65_context.h src/q65_context.cpp 
+  ${project_common_SRCS} 
+  ${wsjt_common_FSRCS} 
+  ${wsjt_q65_CSRCS} 
+  ${wsjt_q65_FSRCS}
+  )
+target_link_libraries (q65decoder  ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
+
+source_group("wsjt_fortran" FILES ${wsjt_common_FSRCS} )
+source_group("wsjt_c" FILES ${ka9q_CSRCS} ${wsjt_CXXSRCS} ${wsjt_CSRCS} ${wsjt_jt65_CSRCS})
+source_group("src" FILES ${project_common_SRCS})
