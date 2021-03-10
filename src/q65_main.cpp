@@ -117,7 +117,7 @@ extern "C" void q65_decode_callback(
 
 
 //-----------------------------------------------------------------------------------
-static void call_q65_decoder(std::vector<short> stream, int num_samples, Q65Context const& ctx, int utc_hhmm)
+static void call_q65_decoder(std::vector<short> stream, Q65Context const& ctx, int utc_hhmm)
 {
     int ntrperiod = ctx.tr_interval_in_seconds;
     int nsubmode = ctx.q65_submode;
@@ -195,7 +195,7 @@ static void usage(void)
     buf << "\t[--spot-reporter-enable= Enable or not http report. true or 1 to enable (default: false)]\n";
     buf << "\t[--file-log-enable= Enable or not file logging. true or 1 to enable (default: false)]\n";
     buf << "\t[--file-log-workdir= Directory name where put file logs into. (default: \".\")]\n";
-    buf << "\t[--q65-submode= Submode 0,1,2,4 means A,B,C,D,E (default: 0)]\n";
+    buf << "\t[--q65-submode= Submode 0,1,2,3,4 means A,B,C,D,E (default: 0)]\n";
     buf << "\t[--tr-interval= T/R interval in seconds (default: 60)]\n";
     buf << "\t[--depth= Deep of analysis. (default: 3)]\n";
     buf << "\t[--immediate-read  Read stream until buffer full, run decoder and exit.]\n";
@@ -293,14 +293,20 @@ int main(int argc, char** argv)
     // print Context info to stdout
     std::cout << ctx.asString() << std::endl;
 
+    std::vector<int> valid_tr_interval = { 15, 30, 60, 120, 300 };
+    if (std::find(valid_tr_interval.begin(), valid_tr_interval.end(), ctx.tr_interval_in_seconds) == valid_tr_interval.end())
+    {
+        std::cerr << "Wrong T/R interval." << std::endl;
+        return -1;
+    }
+
     const size_t IDLE_READ_SIZE = 1024;
     std::vector<short> idle_buffer(IDLE_READ_SIZE);
 
     const size_t COLLECTING_READ_SIZE = 1024;
-    const size_t max_record_duration_in_seconds = 50; // 50 seconds max for jt65
     const size_t sample_rate = 12000;
-    const size_t max_num_samples = sample_rate * max_record_duration_in_seconds;
-    std::vector<short> collecting_buffer(max_num_samples);
+    const size_t target_num_samples = sample_rate * ctx.tr_interval_in_seconds;
+    std::vector<short> collecting_buffer(target_num_samples);
 
     size_t collecting_pos = 0;
 
@@ -334,8 +340,12 @@ int main(int argc, char** argv)
         if (collecting_pos)
         {
             std::cout << "Start decoding ..." << std::endl;
-            int utc = utc_as_wsjt_int_hhmm(); //
-            std::thread t(call_q65_decoder, collecting_buffer, collecting_pos, ctx, utc);
+            
+            // fill rest by zeroes
+            std::fill(collecting_buffer.begin() + collecting_pos, collecting_buffer.end(), 0);
+
+            int utc = utc_as_wsjt_int_hhmmss(); //
+            std::thread t(call_q65_decoder, collecting_buffer, ctx, utc);
             t.join();
         }
 
@@ -376,7 +386,7 @@ int main(int argc, char** argv)
             if (!need_launch && s > prev_seconds_to_launch) 
             {
                 int passed = seconds_since_launch(ctx.tr_interval_in_seconds);
-                limit_num_samples_extra = (max_record_duration_in_seconds - passed) * sample_rate;
+                limit_num_samples_extra = (ctx.tr_interval_in_seconds - passed - 1) * sample_rate;
                 if (limit_num_samples_extra > 0)
                 {
                     need_launch = true;
@@ -400,8 +410,11 @@ int main(int argc, char** argv)
                 working_mode = WORKING_MODE::IDLE;
                 prev_seconds_to_launch = ctx.tr_interval_in_seconds;
 
-                int utc = utc_as_wsjt_int_hhmm(); // 100*hh + mm;
-                std::thread t(call_q65_decoder, collecting_buffer, collecting_pos, ctx, utc);
+                // fill rest by zeroes
+                std::fill(collecting_buffer.begin() + collecting_pos, collecting_buffer.end(), 0);
+
+                int utc = utc_as_wsjt_int_hhmmss();
+                std::thread t(call_q65_decoder, collecting_buffer, ctx, utc);
                 t.detach();
             }
             else
