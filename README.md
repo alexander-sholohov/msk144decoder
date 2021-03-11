@@ -1,7 +1,9 @@
 ### MSK144 Stream Decoder.
 
 **Input:** Reads audio stream from stdin. Format: 12000 samples per second, 16 bits signed, mono.  
-**Output:** Prints decoded lines to stdout, optionally writes log files and posts results to a specific HTTP service.
+**Output:** Prints decoded lines to stdout, optionally writes log files and posts results to a specific HTTP service.  
+
+Despite the repository has name msk144* it also includes jt65decoder and q65decoder. These decoders act in the similar way. They accept infinite stream at input, start recording at proper T/R interval, feed the consumed stream to decoder, repeat that process again in the loop.
 
 **How to compile:**
 
@@ -44,6 +46,10 @@ cat ../demo/000000_000001.wav | ./msk144decoder
 Get brief help:
 ```shell
 ./msk144decoder --help
+
+./jt65decoder --help
+
+./q65decoder --help
 ```
 
 Getting stream from rtl_tcp example:
@@ -61,7 +67,7 @@ Links:
 - [WSJT-X Software by Joe K1JT](https://physics.princeton.edu/pulsar/k1jt/wsjtx.html)
 - [WSJT Git Repository at sourceforge](https://sourceforge.net/p/wsjt/wsjtx/ci/master/tree/)
 
-Acknowledgements to K1JT Joe Taylor and WSJT Development Group. The algorithms, source code, and protocol specifications for the mode MSK144 are Copyright © 2001-2021 by one or more of the following authors: Joseph Taylor, K1JT; Bill Somerville, G4WJS; Steven Franke, K9AN; Nico Palermo, IV3NWV; Greg Beam, KI7MT; Michael Black, W9MDB; Edson Pereira, PY2SDR; Philip Karn, KA9Q; and other members of the WSJT Development Group.
+Acknowledgements to K1JT Joe Taylor and WSJT Development Group. The algorithms, source code, and protocol specifications for the mode MSK144, JT65, Q65 are Copyright © 2001-2021 by one or more of the following authors: Joseph Taylor, K1JT; Bill Somerville, G4WJS; Steven Franke, K9AN; Nico Palermo, IV3NWV; Greg Beam, KI7MT; Michael Black, W9MDB; Edson Pereira, PY2SDR; Philip Karn, KA9Q; and other members of the WSJT Development Group.
 
 Alexander, RA9YER.  
 ra9yer@yahoo.com
