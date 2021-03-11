@@ -48,7 +48,7 @@ struct GFortranContext
 {
     void* data0 = &fortran_working_area[0];
     void* data1 = 0;
-    DecodeResult decode_result;
+    std::vector<DecodeResult> decode_results;
 
     size_t fortran_working_area[16];
 };
@@ -110,7 +110,12 @@ extern "C" void q65_decode_callback(
         << " ntrperiod=" << *ntrperiod
         << std::endl;
 
-    me->decode_result.initFromParams(*snr1, *dt, *freq, rtrim_copy(decoded), info.str());
+    if (*idec > -1)
+    {
+        DecodeResult dr;
+        dr.initFromParams(*snr1, *dt, *freq, *nutc, rtrim_copy(decoded), info.str());
+        me->decode_results.emplace_back(dr);
+    }
 
     std::cout << "*** " << info.str() << std::endl;
 }
@@ -121,8 +126,8 @@ static void call_q65_decoder(std::vector<short> stream, Q65Context const& ctx, i
 {
     int ntrperiod = ctx.tr_interval_in_seconds;
     int nsubmode = ctx.q65_submode;
-    int nfqso = 1500;
-    int ntol = 100;
+    int nfqso = 200; // 
+    int ntol = 0;
     int ndepth = ctx.q65_depth;
 
     int nfa0 = 200;
@@ -141,14 +146,13 @@ static void call_q65_decoder(std::vector<short> stream, Q65Context const& ctx, i
     int nQSOprogress = 0;
     int ncontest = 0;
     int lapcqonly = MY_FALSE;
-    int navg0 = 13;
+    int navg0 = 0; // output
 
     memset(mycall, 0, sizeof(mycall));
     memset(hiscall, 0, sizeof(hiscall));
     memset(hisgrid, 0, sizeof(hisgrid));
 
     GFortranContext fortranContext;
-    fortranContext.decode_result.updateUTCTime(utc_hhmm);
 
     void* callback = (void*)&q65_decode_callback;
 
@@ -178,12 +182,22 @@ static void call_q65_decoder(std::vector<short> stream, Q65Context const& ctx, i
         &navg0,
         12/* mycall */, 12 /* hiscall */, 6 /* hisgrid */);
 
-    if (fortranContext.decode_result.isValid())
+    size_t seq_no = 0;
+    for (DecodeResult const& dr : fortranContext.decode_results)
     {
-        std::cout << "result valid" << std::endl;
-        // call as normal function, not a thread
-        report_tasks(ctx, std::move(stream), fortranContext.decode_result, 0);
+        if (dr.isValid())
+        {
+            // call as normal function, not a thread
+            report_tasks(ctx, std::move(stream), dr, seq_no);
+            seq_no++;
+        }
     }
+}
+
+//-------------------------------------------------------------------
+int utc_as_wsjt_int_by_tr_interval(int tr_interval)
+{
+    return (tr_interval >= 60) ? utc_as_wsjt_int_hhmm() : utc_as_wsjt_int_hhmmss();
 }
 
 //-------------------------------------------------------------------
@@ -344,7 +358,7 @@ int main(int argc, char** argv)
             // fill rest by zeroes
             std::fill(collecting_buffer.begin() + collecting_pos, collecting_buffer.end(), 0);
 
-            int utc = utc_as_wsjt_int_hhmmss(); //
+            int utc = utc_as_wsjt_int_by_tr_interval(ctx.tr_interval_in_seconds); //
             std::thread t(call_q65_decoder, collecting_buffer, ctx, utc);
             t.join();
         }
@@ -413,7 +427,7 @@ int main(int argc, char** argv)
                 // fill rest by zeroes
                 std::fill(collecting_buffer.begin() + collecting_pos, collecting_buffer.end(), 0);
 
-                int utc = utc_as_wsjt_int_hhmmss();
+                int utc = utc_as_wsjt_int_by_tr_interval(ctx.tr_interval_in_seconds);
                 std::thread t(call_q65_decoder, collecting_buffer, ctx, utc);
                 t.detach();
             }

@@ -55,11 +55,12 @@ void DecodeResult::initFromMSK144Result(std::string const& s)
 }
 
 //--------------------------------------------------------------------
-void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency, std::string const& message, std::string const& original_line)
+void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency, int utc_time, std::string const& message, std::string const& original_line)
 {
     this->db_ratio = db_ratio;
     this->dt_shift = dt_shift;
     this->frequency = frequency;
+    this->utc_time = utc_time;
     this->message = message;
     this->original_line = original_line;
 
