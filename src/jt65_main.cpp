@@ -48,7 +48,8 @@ struct GFortranContext
 {
     void* data0 = &fortran_working_area[0];
     void* data1 = 0;
-    DecodeResult decode_result;
+    std::vector<DecodeResult> decode_results;
+    int utc_time = 0;
 
     size_t fortran_working_area[16];
 };
@@ -118,7 +119,9 @@ extern "C" void jt65_decode_callback(GFortranContext *  me,
         << " nsum=" << *nsum
         << " minsync=" << *minsync;
 
-    me->decode_result.initFromParams(*snr, *dt, *freq, rtrim_copy(decoded), info.str());
+    DecodeResult dr;
+    dr.initFromParams(*snr, *dt, *freq, me->utc_time, rtrim_copy(decoded), info.str());
+    me->decode_results.emplace_back(dr);
 
     std::cout << "*** " << info.str() << std::endl;
 }
@@ -166,7 +169,7 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
     memset(hisgrid, 0, sizeof(hisgrid));
 
     GFortranContext fortranContext;
-    fortranContext.decode_result.updateUTCTime(utc_hhmm);
+    fortranContext.utc_time = utc_hhmm;
 
     void* callback = (void*)&jt65_decode_callback;
 
@@ -199,12 +202,17 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
         &ljt65apon, // bool
         12, 12, 6);
 
-    if (fortranContext.decode_result.isValid())
+    size_t seq_no = 0;
+    for (DecodeResult const& dr : fortranContext.decode_results)
     {
-        std::cout << "result valid" << std::endl;
-        // call as normal function, not a thread
-        report_tasks(ctx, std::move(stream), fortranContext.decode_result, 0);
+        if (dr.isValid())
+        {
+            // call as normal function, not a thread
+            report_tasks(ctx, std::move(stream), dr, seq_no);
+            seq_no++;
+        }
     }
+
 }
 
 //-------------------------------------------------------------------
