@@ -132,7 +132,7 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
     const int JT65_EXPECTING_NUM_SAMPLES = 60 * 12000;
     std::vector<float> buffer(JT65_EXPECTING_NUM_SAMPLES);
 
-    // calc result len
+    // get result length
     int len = std::min(static_cast<int>(stream.size()), num_samples);
     // convert samples to float buffer
     for (size_t idx = 0; idx < len && idx < buffer.size(); idx++)
@@ -176,8 +176,8 @@ static void call_jt65_decoder(std::vector<short> stream, int num_samples, JT65Co
     __jt65_decode_MOD_decode(
         &fortranContext,
         callback,
-        &buffer[0], // 50*12000 samples max
-        &npts,
+        &buffer[0], // exact 60*12000 samples
+        &npts, // ~51*12000 samples max
         &newdat, // bool
         &nutc,
         &nf1,
