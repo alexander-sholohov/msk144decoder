@@ -66,7 +66,9 @@ python generate_cmd_line.py
 Links:  
 - [WSJT-X Software by Joe K1JT](https://physics.princeton.edu/pulsar/k1jt/wsjtx.html)
 - [WSJT Git Repository at sourceforge](https://sourceforge.net/p/wsjt/wsjtx/ci/master/tree/)
+- [Spot Reporter Discussion Thread (in Russian)](http://forum.22dx.ru/viewtopic.php?f=7&t=145)
 
+---
 Acknowledgements to K1JT Joe Taylor and WSJT Development Group. The algorithms, source code, and protocol specifications for the mode MSK144, JT65, Q65 are Copyright © 2001-2021 by one or more of the following authors: Joseph Taylor, K1JT; Bill Somerville, G4WJS; Steven Franke, K9AN; Nico Palermo, IV3NWV; Greg Beam, KI7MT; Michael Black, W9MDB; Edson Pereira, PY2SDR; Philip Karn, KA9Q; and other members of the WSJT Development Group.
 
 Alexander, RA9YER.  
