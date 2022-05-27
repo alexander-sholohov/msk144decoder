@@ -176,12 +176,14 @@ int main(int argc, char** argv)
 
 
     // Reserve space for the buffer.
-    const size_t HALF_UNIT_SIZE = 7 * 512; // 
-    std::vector<short> buffer(2 * HALF_UNIT_SIZE);
+    const size_t HALF_UNIT_SIZE = 7 * 512; // 3584
+    const size_t FULL_UNIT_SIZE = 2 * HALF_UNIT_SIZE; // 7168
+    std::vector<short> buffer(FULL_UNIT_SIZE);
 
     std::cout << "MSK144decoder started." << std::endl;
  
     size_t success_seq_no = 0;
+    bool first_read = true;
 
     while(true)
     {
@@ -190,10 +192,19 @@ int main(int argc, char** argv)
             break;
         }
 
-        std::copy(buffer.begin() + HALF_UNIT_SIZE, buffer.end(), buffer.begin());
+        if(first_read)
+        {
+            int rc = fread(&buffer[0], sizeof(short), FULL_UNIT_SIZE, stdin);
+            if(rc != FULL_UNIT_SIZE) { std::cerr << "Incomplete read error. rc=" << rc << std::endl; break; }
+            first_read = false;
+        }
+        else
+        {
+            std::copy(buffer.begin() + HALF_UNIT_SIZE, buffer.end(), buffer.begin());
+            int rc = fread(&buffer[HALF_UNIT_SIZE], sizeof(short), HALF_UNIT_SIZE, stdin);
+            if(rc != HALF_UNIT_SIZE) { std::cerr << "Incomplete read error. rc=" << rc << std::endl; break; }
+        }
 
-        int rc = fread(&buffer[HALF_UNIT_SIZE], sizeof(short), HALF_UNIT_SIZE, stdin);
-        if(rc != HALF_UNIT_SIZE) { std::cerr << "Incomplete read error. rc=" << rc << std::endl; break; }
 
         int nutc0 = utc_as_wsjt_int_hhmmss(); // 10000*hh + 100*mm + ss;
         std::string line = call_mskrtd(&buffer[0], ctx, nutc0, 0.0);
