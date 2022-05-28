@@ -12,7 +12,7 @@
 std::string Context::asString() const
 {
     std::ostringstream info;
-    info << "Spot reporter servcice: ";
+    info << "Spot reporter service: ";
     if (this->sport_reporter_enabled) {
         info << "enabled. "
             << " url=" << this->spot_reporter_url;

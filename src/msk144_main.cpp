@@ -87,7 +87,7 @@ static void usage(void)
     buf << "\t[--file-log-enable= Enable or not file logging. true or 1 to enable (default: false)]\n";
     buf << "\t[--file-log-workdir= Directory name where put file logs into. (default: \".\")]\n";
     buf << "\t[--rxfreq= Center of rx frequency (default: 1500)]\n";
-    buf << "\t[--depth= How deep frames average. (default: 3)]\n";
+    buf << "\t[--depth= [1,2,3] How deep frames average. (default: 3)]\n";
     buf << "\t[--help this text]\n";
 
     std::cout << buf.str() << std::endl;
