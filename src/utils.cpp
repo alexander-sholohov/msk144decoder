@@ -91,6 +91,17 @@ void create_dir_if_not_exists(std::string const& dirname)
 
 }
 
+void swap_endians_if_need(short *buf, size_t length)
+{
+#ifdef SWAP_ENDIANS
+    for(size_t pos=0; pos < length; ++pos)
+    {
+        short v = buf[pos];
+        buf[pos] = (v << 8) | ((v >> 8) & 0xff);
+    }
+#endif
+}
+
 // from https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
 
 // trim from end (in place)

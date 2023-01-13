@@ -207,6 +207,7 @@ int main(int argc, char** argv)
 
 
         int nutc0 = utc_as_wsjt_int_hhmmss(); // 10000*hh + 100*mm + ss;
+        swap_endians_if_need(&buffer[0], buffer.size());
         std::string line = call_mskrtd(&buffer[0], ctx, nutc0, 0.0);
 
         // Print RAW string from decoder to console with *** prefix at begin of line.

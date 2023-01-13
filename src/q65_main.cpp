@@ -359,6 +359,7 @@ int main(int argc, char** argv)
             std::fill(collecting_buffer.begin() + collecting_pos, collecting_buffer.end(), 0);
 
             int utc = utc_as_wsjt_int_by_tr_interval(ctx.tr_interval_in_seconds); //
+            swap_endians_if_need(&collecting_buffer[0], collecting_pos);
             std::thread t(call_q65_decoder, collecting_buffer, ctx, utc);
             t.join();
         }
@@ -428,6 +429,7 @@ int main(int argc, char** argv)
                 std::fill(collecting_buffer.begin() + collecting_pos, collecting_buffer.end(), 0);
 
                 int utc = utc_as_wsjt_int_by_tr_interval(ctx.tr_interval_in_seconds);
+                swap_endians_if_need(&collecting_buffer[0], collecting_pos);
                 std::thread t(call_q65_decoder, collecting_buffer, ctx, utc);
                 t.detach();
             }

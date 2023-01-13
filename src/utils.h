@@ -20,6 +20,8 @@ int seconds_to_next_launch(int tr_interval);
 
 void create_dir_if_not_exists(std::string const& dirname);
 
+void swap_endians_if_need(short *buf, size_t length);
+
 std::tm utcnow();
 
 std::string rtrim_copy(std::string s);

@@ -13,6 +13,7 @@ if (NOT CMAKE_BUILD_TYPE)
     FORCE)
 endif (NOT CMAKE_BUILD_TYPE)
 
+option (SWAP_ENDIANS "Swap bytes in readed 16bits samples." OFF)
 
 set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_PATH})
 
@@ -24,6 +25,9 @@ include_directories(${CURL_INCLUDE_DIR})
 
 # project definitions
 add_definitions (-DBIGSYM=1 )
+if(SWAP_ENDIANS)
+  add_definitions (-DSWAP_ENDIANS=1)
+endif()
 
 set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pthread")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=gnu++11 -pthread")
