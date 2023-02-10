@@ -15,7 +15,7 @@ struct Context
     std::string file_log_workdir = ".";
     //
     bool sport_reporter_enabled = false;
-    std::string spot_reporter_wsjt_mode = "none"; // "msk144" . Will be set in nested contructors.
+    std::string spot_reporter_wsjt_mode = "none"; // "msk144" . Will be set in the nested constructors.
     std::string spot_reporter_magic_key = "";
     std::string sport_reporter_src = "";
     std::string spot_reporter_url = "http://192.168.1.200:9000/spotter/default/populate_spot";

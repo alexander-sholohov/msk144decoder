@@ -20,7 +20,7 @@ std::string MSK144Context::asString() const
 {
     std::ostringstream info;
     info << Context::asString();
-    info << "MSK144 center frequncy: " << this->mskrtd_nrxfreq << " Hz" << std::endl;
+    info << "MSK144 center frequency: " << this->mskrtd_nrxfreq << " Hz" << std::endl;
     info << "MSK144 depth: " << this->mskrtd_ndepth << std::endl;
 
     return info.str();
