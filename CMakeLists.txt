@@ -15,6 +15,8 @@ endif (NOT CMAKE_BUILD_TYPE)
 
 option (SWAP_ENDIANS "Swap bytes in readed 16bits samples." OFF)
 
+include (GNUInstallDirs)
+
 set (CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMake/Modules ${CMAKE_MODULE_PATH})
 
 find_package (FFTW3 COMPONENTS single threads REQUIRED)
@@ -228,6 +230,8 @@ add_executable (q65decoder
   ${wsjt_q65_FSRCS}
   )
 target_link_libraries (q65decoder  ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
+
+install (TARGETS msk144decoder jt65decoder q65decoder DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 source_group("wsjt_fortran" FILES ${wsjt_common_FSRCS} )
 source_group("wsjt_c" FILES ${ka9q_CSRCS} ${wsjt_CXXSRCS} ${wsjt_CSRCS} ${wsjt_jt65_CSRCS})
