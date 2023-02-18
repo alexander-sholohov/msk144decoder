@@ -64,7 +64,7 @@ python generate_cmd_line.py
 ```
 
 Links:  
-- [WSJT-X Software by Joe K1JT](https://physics.princeton.edu/pulsar/k1jt/wsjtx.html)
+- [WSJT-X Software by Joe K1JT](https://wsjt.sourceforge.io/)
 - [WSJT Git Repository at sourceforge](https://sourceforge.net/p/wsjt/wsjtx/ci/master/tree/)
 - [Spot Reporter Discussion Thread (in Russian)](http://forum.22dx.ru/viewtopic.php?f=7&t=145)
 
