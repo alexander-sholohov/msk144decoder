@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 //--------------------------------------------------------------------
 void DecodeResult::initFromMSK144Result(std::string const& s)
@@ -60,17 +61,15 @@ void DecodeResult::initFromParams(int db_ratio, float dt_shift, float frequency,
     this->db_ratio = db_ratio;
     this->dt_shift = dt_shift;
     this->frequency = frequency;
-    this->utc_time = utc_time;
+
+    std::ostringstream buf_time;
+    buf_time << std::setfill('0') << std::setw(4) << utc_time;
+    this->utc_time = buf_time.str();
+
     this->message = message;
     this->original_line = original_line;
 
     this->_result_valid = true;
-}
-
-//--------------------------------------------------------------------
-void DecodeResult::updateUTCTime(int utc_time)
-{
-    this->utc_time = utc_time;
 }
 
 //--------------------------------------------------------------------
