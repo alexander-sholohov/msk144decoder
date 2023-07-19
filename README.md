@@ -37,6 +37,14 @@ cmake --build .
 
 Executable file *msk144decoder* will appear at the current directory.
 
+To install the binaries for system-wide use, you can additionally run the following command:
+
+```shell
+sudo cmake --install .
+```
+
+(`sudo` can be omitted if run as root)
+
 Wav-file reading example:
 ```shell
 cat ../demo/000000_000001.wav | ./msk144decoder
