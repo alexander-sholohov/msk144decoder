@@ -200,36 +200,37 @@ set (project_common_SRCS
   src/context.cpp src/context.h
   )
 
+add_library(wsjt_fort_common OBJECT
+  ${wsjt_common_FSRCS} 
+  )
+
 add_executable (msk144decoder 
   src/msk144_main.cpp 
   src/msk144_context.h src/msk144_context.cpp 
   ${project_common_SRCS}
-  ${wsjt_common_FSRCS} 
   ${wsjt_msk144_FSRCS} 
   ${wsjt_CXXSRCS} 
   ${wsjt_msk144_CSRCS})
-target_link_libraries (msk144decoder  ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
+target_link_libraries (msk144decoder wsjt_fort_common ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
 
 add_executable (jt65decoder 
   src/jt65_main.cpp 
   src/jt65_context.h src/jt65_context.cpp 
   ${project_common_SRCS} 
-  ${wsjt_common_FSRCS} 
   ${wsjt_jt65_CSRCS} 
   ${wsjt_jt65_FSRCS}
   ${ka9q_CSRCS}
   )
-target_link_libraries (jt65decoder  ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
+target_link_libraries (jt65decoder wsjt_fort_common ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
 
 add_executable (q65decoder 
   src/q65_main.cpp 
   src/q65_context.h src/q65_context.cpp 
   ${project_common_SRCS} 
-  ${wsjt_common_FSRCS} 
   ${wsjt_q65_CSRCS} 
   ${wsjt_q65_FSRCS}
   )
-target_link_libraries (q65decoder  ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
+target_link_libraries (q65decoder wsjt_fort_common ${FFTW3_LIBRARIES}  ${CURL_LIBRARIES} )
 
 install (TARGETS msk144decoder jt65decoder q65decoder DESTINATION ${CMAKE_INSTALL_BINDIR})
 
